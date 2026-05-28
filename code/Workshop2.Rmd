@@ -306,5 +306,5 @@ credentials::git_credential_ask()
 usethis::git_sitrep()
 gitcreds::gitcreds_set()
 
-
+# finally worked
 ```

@@ -198,21 +198,25 @@ ggplot(data = <DATA>) + <GEOM_FUNCTION>(mapping = eas(<MAPPINGS>))
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy, colour = class))
 ```
+
 ```{r size class graph}
 # Change point size by class
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy, size = class))
 ```
+
 ```{r transparency graph}
 # Change point transparency by class (alpha)
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy, alpha = class))
 ```
+
 ```{r Graph point shape by class}
 # Changing plot points on the graph to be shapes according to class
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy, shape = class))
 ```
+
 ```{r Manual Graph Aesthetic}
 # Set properties manually, such as offering a number or a colour
 ggplot(data = mpg) + 
@@ -220,6 +224,7 @@ ggplot(data = mpg) +
 
 # other manual appearance alterations include the name of a color as a character string, the size of a point in mm, the shape of a point as a number
 ```
+
 ```{r}
 # testing out mapping an aesthetic to something other than a variable name
 ggplot(data = mpg) + 
@@ -233,18 +238,21 @@ ggplot(data = mpg) +
   geom_point(mapping = aes(x = displ, y = hwy)) + 
   facet_wrap(~ class)
 ```
+
 ```{r 2 varaible facet}
 # to split up graphs using more than one variable, split them using ~
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy)) + 
   facet_grid(drv ~ cyl)
 ```
+
 ```{r}
 # use a . if you do not want to facet in the rows or column dimension
 ggplot(data = mpg) + 
   geom_point(mapping = aes(x = displ, y = hwy)) + 
   facet_grid(. ~ cyl)
 ```
+
 ```{r Exercise}
 ?facet_grid
 #Exercise 2.20
@@ -284,16 +292,114 @@ ggplot(data = mpg) +
 
 # To specify different data for each layer use the "subcompact" to select a subset of the data and plot only that subset
 install.packages("ggplot2")
+install.packages("dplyr")
+library(dplyr)
 library(ggplot2)
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
   geom_point(mapping = aes(color = class)) + 
-  geom_smooth(data = filter(mpg, class = "subcompact")),(se = FALSE)
+  geom_smooth(data = dplyr::filter(mpg, class == "subcompact"),se = FALSE)
 
-# FINISH END OF 2.21
+```
+
+```{r Exercise 2.2}
+# 1. What geom would you use to draw a line chart? A histogram? A boxplot? An area chart?
+# line chart - geom_line(), histogram - geom_histogram(), boxplot - geom_boxplot(), area chart - geom_area()
+
+# 2. I predict these two graphs will not look different because the information in different places means the same thing to the computer, as it tells it to use the same data and the same aesthetics, so it will produce the same graph.
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point() + 
+  geom_smooth()
+
+ggplot() + 
+  geom_point(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_smooth(data = mpg, mapping = aes(x = displ, y = hwy))
+```
+
+```{r Transformations and Stats}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut))
+# Alternative method:
+ggplot(data = diamonds) + 
+  stat_count(mapping = aes(x = cut))
+
+# to override default settings:
+demo <- tribble(
+  ~cut,         ~freq,
+  "Fair",       1610,
+  "Good",       4906,
+  "Very Good",  12082,
+  "Premium",    13791,
+  "Ideal",      21551
+)
+demo
+
+ggplot(data = demo) +
+  geom_bar(mapping = aes(x = cut, y = freq), stat = "identity")
+# this allows the data to be categorized by cut and the frequency to be plotted on the y axis, instead of counting the number of occurrences of each cut and plotting that on the y axis.
+
+# Display proportion of total dimond dataset rather than count, overriding a default mapping from transformed variables to aesthetics
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, y = stat(prop), group = 1))
+# Warning is ok
+
+# Plotting statistical details, show more about transformations in your plot
+ggplot(data = diamonds) + 
+  stat_summary(
+    mapping = aes(x = cut, y = depth),
+    fun.min = min,
+    fun.max = max,
+    fun = median
+  )
+```
+
+```{r Aesthetic Adjustments}
+# Aesthetic adjustments
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, colour = cut))
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = cut))
+
+# Use position arugment with clarity
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity))
+
+# Position adjustment allows customising plots in 3 ways: identiy (raw data), fill (changes heights), dodge (forces ggplot2 to not put things on top of each other)
+
+# Identity places each object exactly where it falls in the context of the graph
+#To alter transparency (alpha)
+ggplot(data = diamonds, mapping = aes(x = cut, fill = clarity)) + 
+  geom_bar(alpha = 1/5, position = "identity")
+
+#To color the bar outlines with no fill color
+ggplot(data = diamonds, mapping = aes(x = cut, colour = clarity)) + 
+  geom_bar(fill = NA, position = "identity")
+
+# Fill works like stacking but makes each set of stacked bars the same height
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity), position = "fill")
+
+# Dodge places overlapping objects side by side
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity), position = "dodge")
+
+# Jitter adds a small amount of random noise to each point to avoid over-plotting when points overlap
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy), position = "jitter")
+```
+
+```{r Layered grammer of graphics}
+# Template for making ggplot2 with position adjustments, stats, and faceting
+ggplot(data = <DATA>) + 
+  <GEOM_FUNCTION>(
+     mapping = aes(<MAPPINGS>),
+     stat = <STAT>, 
+     position = <POSITION>
+  ) +
+  <FACET_FUNCTION>
 ```
 
 
-```{r Workshop3} 
+```{r Workshop3}
 install.packages("usethis")
 library(usethis)
 use_git_config (user.name = "Natalie Wasinski", user.email = "nwasinski2@gmail.com")
@@ -308,3 +414,141 @@ gitcreds::gitcreds_set()
 
 # finally worked
 ```
+
+```{r Workshop 4}
+
+# GitHub copilot - anticipates what you want to write and suggests it like autocorrect
+install.packages("tidyverse")
+install.packages("palmerpenguins")
+library(tidyverse)
+library(palmerpenguins)
+
+# Create a ggplot scatter plot using the penguins dataset.
+# Plot bill_length_mm on the x-axis and bill_depth_mm on the y-axis.
+# Color the points by species and use geom_point with size 3. 
+# Add a minimal theme and clean labels.
+ggplot(data = penguins) + 
+  geom_point(mapping = aes(x = bill_length_mm, y = bill_depth_mm, color = species), size = 3) +
+  theme_minimal() +
+  labs(x = "Bill Length (mm)", y = "Bill Depth (mm)", color = "Penguin Species")
+# Create a ggplot boxplot using the penguins dataset.
+# Plot flipper_length_mm across different species, faceted by island
+# Color the points by species
+ggplot(data = penguins) + 
+  geom_boxplot(mapping = aes(x = species, y = flipper_length_mm, color = species)) +
+  facet_wrap(~ island) +
+  labs(x = "Penguin Species", y = "Flipper Length (mm)", color = "Penguin Species") +
+  theme_minimal()
+# Fix to make it one box plot
+
+
+# chattr (Conversational Workspace Engine)
+install.packages("ellmer")
+install.packages("chattr")
+
+# Securely store your Application Programming Interface (API) key
+usethis::edit_r_environ()
+
+# Connecting chattr to my model
+usethis::edit_r_profile()
+
+library(ggplot2)
+ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width, color = Species)) +
+  geom_point()
+# use head() to see front of dataset and tail() to see end, summary() shows a summary of all stats from data
+
+```
+
+```{r Filtering your data}
+# Simple Example: Checking Sea Surface Temperature (SST)
+sst <- 30.2
+
+if (sst > 29.5) {
+  print("Warning: Marine heatwave threshold exceeded!")
+} else {
+  print("SST remains within baseline parameters.")
+}
+# Prints: "Warning: Marine heatwave threshold exceeded!"
+
+
+# Tidyverse Alternative: Vectorised Conditions (dplyr)
+# if_else()
+library(tidyverse)
+# Sample coral data
+coral_monitoring <- tibble(
+  site = c("Site_A", "Site_B", "Site_C"),
+  depth_m = c(12, 35, 8)
+)
+# Classify depth using if_else
+coral_monitoring <- coral_monitoring %>% 
+  mutate(zone = if_else(depth_m > 30, "Deep Reef", "Shallow Reef"))
+
+## Task ##
+# The function mutate() is used to create a new variable called 'zone' based on the condition specified in if_else(). If depth_m is greater than 30, 'zone' will be classified as "Deep Reef"; otherwise, it will be classified as "Shallow Reef". The resulting tibble will show the site, depth, and corresponding zone classification for each monitoring site. - information from AI copilot - %>% is the pipe operator, it takes the output of one function and feeds it into the next function, allowing for a more readable and efficient workflow when performing multiple operations on a dataset. - information from AI copilot - 
+
+# case_when()
+# provides clean, sequential evaluation layout using formula tildes
+coral_monitoring <- coral_monitoring %>% 
+  mutate(reef_category = case_when(
+    depth_m < 10  ~ "Lagoon / Flats",
+    depth_m <= 30 ~ "Crest / Slope",
+    depth_m > 30  ~ "Mesophotic / Deep",
+    TRUE          ~ "Unclassified" # Catch-all remainder
+  ))
+```
+
+```{r Task: Enviro Stress Classification}
+# Using the coral_monitoring data, initialize a tibble named marine_stations containing a column for salinity with values 35, 28, 32, and 12. Use the pipe operator(%>%) and mutate() combined with case_when() to create a new column named environment_type. Classify values below 15 as "Estuarine", values between 15 and 30 as "Brackish", and values above 30 as "Marine".
+# put into chattr 
+library(dplyr)
+
+marine_stations <- tibble(
+  salinity = c(35, 28, 32, 12)
+) %>%
+  mutate(
+    environment_type = case_when(
+      salinity < 15 ~ "Estuarine",
+      salinity >= 15 & salinity <= 30 ~ "Brackish",
+      salinity > 30 ~ "Marine",
+      TRUE ~ NA_character_ # Default case for any unhandled values
+    )
+  )
+
+marine_stations
+```
+
+```{r Automation - Iterating Efficiency}
+# Base R: For loops - repeats a code chunk for each element in a designated sequence
+# Classic loop anatomy
+for (year in 2020:2024) {
+  print(paste("Processing climate data for year:", year))
+}
+
+# loops can repeat processes over file directories
+# Loop across index sequences
+transect_lengths <- c(50, 100, 25, 75)
+
+for (i in seq_along(transect_lengths)) {
+  print(paste("Transect number", i, "measures", transect_lengths[i], "metres."))
+}
+
+
+# Tidyverse alternative: Functional Programming (purr)
+# Use map functions - map a specific operation onto every item in a list or vector, automatically ensuring that your output matches the precise data structure you expect.
+
+## Comparison Example: calc sqr roots of site vectors
+# Using standard for-loop:
+site_areas <- c(144, 400, 625)
+results <- numeric(length(site_areas)) # Must build an empty container first
+
+for(i in seq_along(site_areas)) {
+  results[i] <- sqrt(site_areas[i])
+
+# Using purrr equivalent:
+library(purrr)
+# Map directly and define your expected output type explicitly
+mapped_results <- map_dbl(site_areas, sqrt)
+
+
+# Itering across complex groups
+

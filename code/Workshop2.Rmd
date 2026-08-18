@@ -177,13 +177,13 @@ library(ggplot2)
 
 ```{r Workshop 2 Start}
 #--------------------------------------------------#
-# MB5370: Visualisation - turning data into graphics
+# MB5370: Workshop 2 Visualisation - turning data into graphics
 # Natalie Wasinski
 # May 21 2026
 # Workspace: D:/MB5370_Techniques_1/Module_1/Workshop2.Rmd
 #----------------------------------------------------------#
 
-library(tidyverse) #remind R it has package, don't have to reinstall every time
+library(tidyverse) #remind R it has package, don't have to re-install every time
 mpg #look at data
 
 ggplot(data = mpg) + geom_point(mapping = aes(x = displ, y = hwy))
@@ -192,7 +192,7 @@ ggplot(data = mpg) + geom_point(mapping = aes(x = displ, y = hwy))
 
 ```{r Graphing Template}
 # Graphing template
-ggplot(data = <DATA>) + <GEOM_FUNCTION>(mapping = eas(<MAPPINGS>))
+ggplot(data = <DATA>) + <GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
 
 # Graphing Aesthetics
 ggplot(data = mpg) + 
@@ -418,8 +418,8 @@ gitcreds::gitcreds_set()
 ```{r Workshop 4}
 
 # GitHub copilot - anticipates what you want to write and suggests it like autocorrect
-install.packages("tidyverse")
-install.packages("palmerpenguins")
+#install.packages("tidyverse")
+#install.packages("palmerpenguins")
 library(tidyverse)
 library(palmerpenguins)
 
@@ -544,7 +544,7 @@ for (i in seq_along(transect_lengths)) {
 site_areas <- c(144, 400, 625)
 results <- numeric(length(site_areas)) # Must build an empty container first
 
-for(i in seq_along(site_areas)) {
+#for(i in seq_along(site_areas)) {
   results[i] <- sqrt(site_areas[i])
 
 # Using purrr equivalent:
@@ -618,5 +618,3 @@ convert_temp_c_to_f <- function(celsius) {
 convert_temp_c_to_f(0)
 ```
 
-```{r Advanced Scripting Extension Challenges}
-# Only do once the above sections are understood #
